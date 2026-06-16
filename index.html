@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juker Jork | Links</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at top left, rgba(0, 153, 255, 0.35), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(255, 0, 150, 0.28), transparent 35%),
+        linear-gradient(135deg, #020617, #07162f, #020617);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 15px;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 45px 45px;
+      animation: moveGrid 18s linear infinite;
+      z-index: -3;
+    }
+
+    @keyframes moveGrid {
+      from { transform: translateY(0); }
+      to { transform: translateY(45px); }
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(25px);
+      opacity: 0.7;
+      z-index: -2;
+      animation: float 6s ease-in-out infinite alternate;
+    }
+
+    .orb.one {
+      width: 180px;
+      height: 180px;
+      background: #00b7ff;
+      top: 12%;
+      left: 12%;
+    }
+
+    .orb.two {
+      width: 220px;
+      height: 220px;
+      background: #ff007a;
+      right: 10%;
+      bottom: 10%;
+      animation-delay: 1.3s;
+    }
+
+    .orb.three {
+      width: 130px;
+      height: 130px;
+      background: #7c3aed;
+      right: 25%;
+      top: 18%;
+      animation-delay: 0.7s;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(-35px) scale(1.08); }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 430px;
+      padding: 34px 24px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(18px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: popIn 0.8s ease forwards;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(35px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(120deg, transparent, rgba(0, 195, 255, 0.45), transparent);
+      transform: translateX(-100%);
+      animation: shine 4s infinite;
+      z-index: -1;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%); }
+      45%, 100% { transform: translateX(100%); }
+    }
+
+    .avatar {
+      width: 115px;
+      height: 115px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background:
+        linear-gradient(135deg, #00c6ff, #7c3aed, #ff007a);
+      padding: 4px;
+      animation: glowPulse 2.5s infinite ease-in-out;
+    }
+
+    .avatar-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #061126;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -4px;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 0 0 18px rgba(0, 195, 255, 0.55);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(255, 0, 122, 0.75);
+      }
+    }
+
+    h1 {
+      font-size: 34px;
+      letter-spacing: 1px;
+      margin-bottom: 7px;
+      text-shadow: 0 0 18px rgba(0, 195, 255, 0.7);
+    }
+
+    .tagline {
+      font-size: 15px;
+      color: #cbd5e1;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .type {
+      color: #67e8f9;
+      font-weight: 700;
+    }
+
+    .links {
+      display: grid;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .link-btn {
+      text-decoration: none;
+      color: #fff;
+      padding: 15px 17px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      background: rgba(255, 255, 255, 0.11);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .link-btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 80%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      transition: 0.5s;
+    }
+
+    .link-btn:hover::after {
+      left: 120%;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.08);
+      flex: 0 0 auto;
+    }
+
+    .brand-icon svg {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .yt-icon {
+      background: linear-gradient(135deg, rgba(255,0,0,0.95), rgba(155,0,35,0.95));
+      box-shadow: 0 0 22px rgba(255, 0, 0, 0.35);
+    }
+
+    .fb-icon {
+      background: linear-gradient(135deg, rgba(24,119,242,0.95), rgba(29,78,216,0.95));
+      box-shadow: 0 0 22px rgba(24, 119, 242, 0.35);
+    }
+
+    .tt-icon {
+      background: linear-gradient(135deg, rgba(17,24,39,0.98), rgba(236,72,153,0.85));
+      box-shadow: 0 0 22px rgba(236, 72, 153, 0.35);
+    }
+
+    .youtube:hover {
+      background: linear-gradient(135deg, #ff0033, #9f1239);
+    }
+
+    .facebook:hover {
+      background: linear-gradient(135deg, #1877f2, #1d4ed8);
+    }
+
+    .tiktok:hover {
+      background: linear-gradient(135deg, #111827, #ec4899);
+    }
+
+    .arrow {
+      font-size: 20px;
+      opacity: 0.8;
+      transition: transform 0.25s ease;
+    }
+
+    .link-btn:hover .arrow {
+      transform: translateX(5px);
+    }
+
+    .footer {
+      margin-top: 25px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22c55e;
+      margin-right: 7px;
+      box-shadow: 0 0 12px #22c55e;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+
+    @media (max-width: 430px) {
+      h1 {
+        font-size: 29px;
+      }
+
+      .card {
+        padding: 28px 18px;
+      }
+
+      .link-btn {
+        padding: 13px 14px;
+      }
+
+      .brand-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-grid"></div>
+  <div class="orb one"></div>
+  <div class="orb two"></div>
+  <div class="orb three"></div>
+
+  <main class="card">
+    <div class="avatar">
+      <div class="avatar-inner">JJ</div>
+    </div>
+
+    <h1>Juker Jork</h1>
+    <p class="tagline">
+      Gamer & Streamer<br>
+      <span class="type">Follow my socials below</span>
+    </p>
+
+    <section class="links">
+      <!-- Change your YouTube link here -->
+      <a class="link-btn youtube" href="https://youtube.com/@jukerjork?si=DiCazrHuZPHI9hO5" target="_blank">
+        <span class="left">
+          <span class="brand-icon yt-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#ffffff" d="M9.7 8.2v7.6L16.2 12 9.7 8.2z"></path>
+              <path fill="#ffffff" d="M21.6 7.1c-.2-.8-.8-1.4-1.6-1.6C18.6 5.1 12 5.1 12 5.1s-6.6 0-8 .4c-.8.2-1.4.8-1.6 1.6C2 8.5 2 12 2 12s0 3.5.4 4.9c.2.8.8 1.4 1.6 1.6 1.4.4 8 .4 8 .4s6.6 0 8-.4c.8-.2 1.4-.8 1.6-1.6.4-1.4.4-4.9.4-4.9s0-3.5-.4-4.9zM10 15.5v-7l6 3.5-6 3.5z" opacity="0.25"></path>
+            </svg>
+          </span>
+          YouTube Channel
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <!-- Change your Facebook page link here -->
+      <a class="link-btn facebook" href="https://www.facebook.com/share/18ySJGHnxg/?mibextid=wwXIfr" target="_blank">
+        <span class="left">
+          <span class="brand-icon fb-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#ffffff" d="M14.2 8.1h2V4.8c-.3 0-1.5-.1-2.8-.1-2.8 0-4.7 1.7-4.7 5v2.8H5.6v3.7h3.1V24h3.8v-7.8h3l.5-3.7h-3.5V10c0-1.1.3-1.9 1.7-1.9z"></path>
+            </svg>
+          </span>
+          Facebook Page
+        </span>
+        <span class="arrow">→</span>
+      </a>
+
+      <!-- Change your TikTok link here -->
+      <a class="link-btn tiktok" href="https://www.tiktok.com/@juker.jork?_r=1&_t=ZS-97FjUr1IUqb" target="_blank">
+        <span class="left">
+          <span class="brand-icon tt-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#25F4EE" d="M16.4 3c.3 2.4 1.6 3.8 3.8 4v3.4c-1.3.1-2.5-.3-3.7-1v6.5c0 3.3-2.1 5.5-5.3 5.5-3 0-5.3-2.1-5.3-5.1 0-3.4 2.8-5.7 6.1-5.1v3.5c-1.5-.5-2.6.3-2.6 1.6 0 1.1.8 1.8 1.9 1.8 1.2 0 1.9-.7 1.9-2.2V3h3.2z"></path>
+              <path fill="#FE2C55" d="M17.5 4.2c.5 1.6 1.6 2.5 3.2 2.8v3.3c-1.2.1-2.3-.2-3.2-.8v6.4c0 3.3-2.1 5.5-5.3 5.5-1.6 0-3-.6-3.9-1.6.8.5 1.7.8 2.8.8 3.2 0 5.3-2.2 5.3-5.5V8.7c1.1.8 2.3 1.1 3.7 1V7.2c-1.1-.3-1.9-.8-2.6-1.6V4.2z"></path>
+              <path fill="#ffffff" d="M15.4 3c.3 2.4 1.6 3.8 3.8 4v2.4c-1.3.1-2.5-.3-3.7-1v6.5c0 3.3-2.1 5.5-5.3 5.5-3 0-5.3-2.1-5.3-5.1 0-3.4 2.8-5.7 6.1-5.1v3.5c-1.5-.5-2.6.3-2.6 1.6 0 1.1.8 1.8 1.9 1.8 1.2 0 1.9-.7 1.9-2.2V3h3.2z"></path>
+            </svg>
+          </span>
+          TikTok
+        </span>
+        <span class="arrow">→</span>
+      </a>
+    </section>
+
+    <p class="footer">
+      <span class="live-dot"></span>Live • Mobile Legends • FiveM • valorant • others
+    </p>
+  </main>
+</body>
+</html>
