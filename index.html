@@ -15,7 +15,9 @@
       --purple:#8b5cf6;
       --blue:#38bdf8;
       --pink:#ec4899;
+      --green:#22c55e;
     }
+    html,body{height:100%}
     body{
       min-height:100vh;
       display:flex;
@@ -40,18 +42,54 @@
       background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
       background-size:42px 42px;
       mask-image:linear-gradient(to bottom,black,transparent 90%);
+      z-index:0;
     }
+
+    /* ---------- Background video layer ---------- */
+    #bg-video-wrap{
+      position:fixed;inset:0;z-index:-2;overflow:hidden;background:var(--bg);
+    }
+    #bg-video{
+      position:absolute;top:50%;left:50%;
+      min-width:100%;min-height:100%;
+      width:auto;height:auto;
+      transform:translate(-50%,-50%);
+      object-fit:cover;
+      opacity:.55;
+      display:none; /* shown via JS once a videoUrl is configured and loads */
+    }
+    #bg-video-wrap:after{
+      content:"";position:absolute;inset:0;
+      background:
+        radial-gradient(circle at 15% 10%,rgba(56,189,248,.18),transparent 28%),
+        radial-gradient(circle at 85% 85%,rgba(236,72,153,.16),transparent 30%),
+        rgba(5,5,11,.55);
+      z-index:-1;
+    }
+
+    #bg-canvas{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55}
+    .scan-sweep{
+      position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:linear-gradient(180deg,transparent 0%,rgba(139,92,246,.08) 45%,rgba(56,189,248,.10) 50%,rgba(139,92,246,.08) 55%,transparent 100%);
+      background-size:100% 300%;
+      opacity:0;
+      transition:opacity .5s ease;
+    }
+    .scan-sweep.active{opacity:1;animation:sweep 5s linear infinite}
+    @keyframes sweep{0%{background-position:0 0}100%{background-position:0 300%}}
+
     .glow{
       position:fixed;
       width:260px;height:260px;border-radius:50%;
       filter:blur(90px);opacity:.20;pointer-events:none;
       animation:float 8s ease-in-out infinite alternate;
+      z-index:0;
     }
     .glow.one{background:#0ea5e9;left:-100px;top:8%}
     .glow.two{background:#db2777;right:-110px;bottom:4%;animation-delay:2s}
     @keyframes float{to{transform:translateY(-35px) scale(1.12)}}
 
-    .page{width:100%;max-width:500px;position:relative}
+    .page{width:100%;max-width:500px;position:relative;z-index:2}
     .card{
       position:relative;
       padding:30px 20px 22px;
@@ -83,6 +121,7 @@
       background:conic-gradient(from 180deg,var(--blue),var(--purple),var(--pink),var(--blue));
       box-shadow:0 0 35px rgba(139,92,246,.35);
       animation:pulse 3s ease-in-out infinite;
+      position:relative;
     }
     .avatar{
       width:100%;height:100%;border-radius:50%;
@@ -90,15 +129,26 @@
       background:linear-gradient(145deg,#171724,#080810);
       border:3px solid #080810;
       font-size:37px;font-weight:900;letter-spacing:-3px;
+      overflow:hidden;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .avatar .initials{display:none}
+    .live-pip{
+      position:absolute;bottom:2px;right:2px;
+      width:22px;height:22px;border-radius:50%;
+      background:var(--green);border:3px solid #080810;
+      box-shadow:0 0 10px rgba(34,197,94,.7);
     }
     @keyframes pulse{50%{box-shadow:0 0 55px rgba(56,189,248,.48)}}
 
     h1{font-size:31px;line-height:1.1;letter-spacing:-1px}
     .handle{margin-top:6px;color:#aeb2c5;font-size:14px}
     .bio{margin:14px auto 0;max-width:360px;color:#c9ccda;font-size:14px;line-height:1.55}
+
+    .status-row{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-top:15px}
     .status{
       display:inline-flex;align-items:center;gap:7px;
-      margin-top:15px;padding:7px 11px;
+      padding:7px 11px;
       border-radius:999px;
       background:rgba(34,197,94,.08);
       border:1px solid rgba(34,197,94,.18);
@@ -107,7 +157,43 @@
     .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 12px #22c55e;animation:blink 1.3s infinite}
     @keyframes blink{50%{opacity:.35}}
 
-    .links{position:relative;z-index:1;display:grid;gap:11px;margin-top:24px}
+    .visitor-chip{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:7px 11px;border-radius:999px;
+      background:rgba(56,189,248,.08);
+      border:1px solid rgba(56,189,248,.18);
+      color:#c9edfd;font-size:12px;font-weight:700;
+      font-variant-numeric:tabular-nums;
+    }
+    .visitor-chip svg{width:13px;height:13px}
+
+    /* Discord live widget */
+    .discord-widget{
+      position:relative;z-index:1;margin-top:20px;
+      border:1px solid rgba(88,101,242,.25);
+      border-radius:18px;
+      background:linear-gradient(135deg,rgba(88,101,242,.10),rgba(88,101,242,.03));
+      padding:13px 14px;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;text-decoration:none;color:#fff;
+      transition:.25s ease;
+    }
+    .discord-widget:hover{border-color:rgba(88,101,242,.5);transform:translateY(-2px)}
+    .dw-left{display:flex;align-items:center;gap:10px;min-width:0}
+    .dw-icon{
+      width:38px;height:38px;border-radius:11px;flex:0 0 38px;
+      background:linear-gradient(135deg,#6875f5,#404eed);
+      display:grid;place-items:center;
+      box-shadow:0 6px 16px rgba(88,101,242,.3);
+    }
+    .dw-icon svg{width:20px;height:20px}
+    .dw-text{min-width:0}
+    .dw-title{font-size:13px;font-weight:800}
+    .dw-sub{font-size:11px;color:#9ea3d4;margin-top:2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+    .dw-sub .pip{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+    .dw-arrow{color:#8a90c9;font-size:18px;flex:0 0 auto}
+
+    .links{position:relative;z-index:1;display:grid;gap:11px;margin-top:20px}
     .link-btn{
       --accent:#fff;
       position:relative;
@@ -132,7 +218,7 @@
       box-shadow:0 14px 35px rgba(0,0,0,.25);
     }
     .link-btn:hover:before{opacity:.14}
-    .left{display:flex;align-items:center;gap:12px;position:relative}
+    .left{display:flex;align-items:center;gap:12px;position:relative;min-width:0}
     .brand-icon{
       width:46px;height:46px;display:grid;place-items:center;
       flex:0 0 46px;border-radius:14px;
@@ -140,9 +226,9 @@
       border:1px solid rgba(255,255,255,.08);
     }
     .brand-icon svg{width:25px;height:25px}
-    .label{font-size:14px;font-weight:800}
+    .label{font-size:14px;font-weight:800;min-width:0}
     .sub{display:block;margin-top:2px;color:#888da2;font-size:11px;font-weight:500}
-    .arrow{position:relative;color:#7f8498;font-size:19px;transition:.25s}
+    .arrow{position:relative;color:#7f8498;font-size:19px;transition:.25s;flex:0 0 auto}
     .link-btn:hover .arrow{transform:translateX(4px);color:#fff}
 
     .youtube{--accent:#ff0033} .yt-icon{background:linear-gradient(135deg,#ff1744,#b00020);box-shadow:0 8px 22px rgba(255,0,50,.22)}
@@ -162,37 +248,71 @@
       .avatar{font-size:33px}
       .link-btn{min-height:62px}
       .brand-icon{width:43px;height:43px;flex-basis:43px}
+      .dw-sub{font-size:10.5px}
     }
   </style>
 </head>
 <body>
+
+  <!-- ======================================================
+       BACKGROUND MEDIA CONFIG
+       Put your own file URLs here. Leave blank ("") to skip
+       and fall back to the animated particle background /
+       no music.
+       ====================================================== -->
+  <script>
+    window.BG_MEDIA = {
+      videoUrl: "https://example.com/your-video.mp4",   // <-- replace with your own .mp4 link (or "")
+      audioUrl: "https://example.com/your-audio.mp3"     // <-- replace with your own .mp3 link (or "")
+    };
+  </script>
+
+  <div id="bg-video-wrap">
+    <video id="bg-video" autoplay muted loop playsinline></video>
+  </div>
+  <audio id="bg-audio" loop preload="auto"></audio>
+
+  <canvas id="bg-canvas"></canvas>
+  <div class="scan-sweep" id="scanSweep"></div>
   <div class="glow one"></div>
   <div class="glow two"></div>
 
   <main class="page">
     <section class="card">
       <header class="profile">
-        <div class="avatar-wrap"><div class="avatar">JJ</div></div>
+        <div class="avatar-wrap">
+          <div class="avatar">
+            <img src="https://scontent.fpnh18-3.fna.fbcdn.net/v/t39.30808-1/743876960_1557686922514523_2120861779872349527_n.jpg?stp=dst-jpg_tt6&cstp=mx720x721&ctp=s200x200&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=1d2534&_nc_eui2=AeEYcO4K8RAwkxCJ_DbcWwZwVZ4AwqNrI5JVngDCo2sjkiQvgyVV2yvG85Pdejn7-L7_oPQqb3n7ENydQcqCu_9r&_nc_ohc=xoslG_-1064Q7kNvwFvnRfE&_nc_oc=AdrSKW-OljXucMdQTaswcCTMXN04iSzEGC3aEuVLEL3425U93OTlGrojGSIGT6mMsEE&_nc_zt=24&_nc_ht=scontent.fpnh18-3.fna&_nc_gid=CZs8xOIhd_jusZvrKr9vQQ&_nc_ss=7b2a8&oh=00_AQHmI3y5O45Zcf8T2wm8K-VYO2kuZ12FbUvb2z4hhPSJaQ&oe=6A840F01" alt="Juker Jork avatar" onerror="this.style.display='none';this.parentElement.querySelector('.initials').style.display='grid'">
+            <span class="initials">JJ</span>
+          </div>
+          <span class="live-pip" title="Online"></span>
+        </div>
         <h1>Juker Jork</h1>
         <div class="handle">@jukerjork</div>
         <p class="bio">Gamer • Streamer • Creator<br>Welcome to my corner of the internet.</p>
-        <div class="status"><span class="dot"></span> Online & creating</div>
+
+        <div class="status-row">
+          <div class="status"><span class="dot"></span> Online & creating</div>
+          <div class="visitor-chip" id="visitorChip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span id="visitorCount">…</span> visits
+          </div>
+        </div>
       </header>
 
-      <section class="links">
-        <a class="link-btn server" href="https://discord.gg/aJBfZCjAJ" target="_blank" rel="noopener">
-                  <span class="left">
-                    <span class="brand-icon server-icon">
-                      <svg viewBox="0 0 24 24"><path fill="#fff" d="M19.5 5.1A16.2 16.2 0 0 0 15.8 4l-.5 1.1a13.7 13.7 0 0 0-6.6 0L8.2 4a16.2 16.2 0 0 0-3.7 1.1C2.1 8.4 1.5 11.6 1.8 14.8a15.5 15.5 0 0 0 4.5 2.3l1.1-1.5c-.6-.2-1.2-.5-1.7-.8l.4-.3c3.3 1.5 7.1 1.5 10.4 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.5a15.5 15.5 0 0 0 4.5-2.3c.4-3.8-.7-7-1.3-9.7zM8.3 13.1c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm7.4 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8 0 1.8 2-.8 2-1.8 2z"/></svg>
-                    </span>
-                    <span class="label">
-          Join My Discord Server
-          <span class="sub">
-            <strong>Late Night Club</strong> • Hang out • Make friends • Connect
+      <a class="discord-widget" id="discordWidget" href="https://discord.gg/aJBfZCjAJ" target="_blank" rel="noopener">
+        <span class="dw-left">
+          <span class="dw-icon">
+            <svg viewBox="0 0 24 24"><path fill="#fff" d="M19.5 5.1A16.2 16.2 0 0 0 15.8 4l-.5 1.1a13.7 13.7 0 0 0-6.6 0L8.2 4a16.2 16.2 0 0 0-3.7 1.1C2.1 8.4 1.5 11.6 1.8 14.8a15.5 15.5 0 0 0 4.5 2.3l1.1-1.5c-.6-.2-1.2-.5-1.7-.8l.4-.3c3.3 1.5 7.1 1.5 10.4 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.5a15.5 15.5 0 0 0 4.5-2.3c.4-3.8-.7-7-1.3-9.7zM8.3 13.1c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm7.4 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>
+          </span>
+          <span class="dw-text">
+            <span class="dw-title">Late Night Club</span>
+            <span class="dw-sub" id="dwStatus"><span class="pip"></span> Checking server…</span>
           </span>
         </span>
-        </a>
-
+        <span class="dw-arrow">›</span>
+      </a>
+      <section class="links">
         <a class="link-btn youtube" href="https://youtube.com/@jukerjork?si=DiCazrHuZPHI9hO5" target="_blank" rel="noopener">
           <span class="left">
             <span class="brand-icon yt-icon">
@@ -228,12 +348,173 @@
             <span class="label">Discord Profile<span class="sub">Chat with me</span></span>
           </span><span class="arrow">›</span>
         </a>
-    </section>
+      </section>
 
       <footer class="footer">
         <b>JUKER JORK</b> • Gamer & Creator • FiveM • Mobile Legends • VALORANT
       </footer>
     </section>
   </main>
+
+  <script>
+    window.BG_MEDIA = {
+  // videoUrl: "https://cdn.imageurlgenerator.com/uploads/159ee145-6abc-411e-9772-3fe9f4aed346.mp4",   // replace with your .mp4 link
+  audioUrl: "https://cdn.imageurlgenerator.com/uploads/695b79b1-6a4b-4256-bac5-bbf97d0af72d.mp3"     // replace with your .mp3 link
+};
+    /* =========================================================
+       BACKGROUND VIDEO
+       Uses window.BG_MEDIA.videoUrl set in the config block above.
+       Falls back to the animated particle canvas if no URL is
+       given or the file fails to load.
+       ========================================================= */
+    const bgVideo = document.getElementById('bg-video');
+    const bgCanvas = document.getElementById('bg-canvas');
+
+    function initBgVideo(){
+      const url = (window.BG_MEDIA && window.BG_MEDIA.videoUrl || '').trim();
+      if(!url){ return; }
+
+      bgVideo.src = url;
+      bgVideo.addEventListener('loadeddata', () => {
+        bgVideo.style.display = 'block';
+        bgCanvas.style.display = 'none'; // hide particle canvas once real video is ready
+      });
+      bgVideo.play().catch(() => {
+        // Autoplay blocked until interaction; retry once on first tap/click/scroll/key
+        const retry = () => {
+          bgVideo.play();
+          ['pointerdown','keydown','scroll'].forEach(evt => window.removeEventListener(evt, retry));
+        };
+        ['pointerdown','keydown','scroll'].forEach(evt => window.addEventListener(evt, retry, { once:true }));
+      });
+    }
+
+    /* =========================================================
+       BACKGROUND MUSIC
+       Uses window.BG_MEDIA.audioUrl set in the config block above.
+       Browsers block autoplay-with-sound until the visitor
+       interacts with the page, so we try immediately and also
+       arm a one-time fallback on first tap/click/scroll/key.
+       ========================================================= */
+    const bgAudio = document.getElementById('bg-audio');
+
+    function initBgAudio(){
+      const url = (window.BG_MEDIA && window.BG_MEDIA.audioUrl || '').trim();
+      if(!url){ return; }
+
+      bgAudio.src = url;
+      bgAudio.volume = 0.1; // fixed at 30%
+
+      let musicEnabled = false;
+      const tryPlay = () => {
+        bgAudio.play().then(() => { musicEnabled = true; }).catch(() => { /* still blocked, wait for interaction */ });
+      };
+      tryPlay();
+
+      const armFallback = () => {
+        if(!musicEnabled) tryPlay();
+        ['pointerdown','keydown','scroll'].forEach(evt => window.removeEventListener(evt, armFallback));
+      };
+      ['pointerdown','keydown','scroll'].forEach(evt => window.addEventListener(evt, armFallback, { once:true }));
+    }
+
+    initBgVideo();
+    initBgAudio();
+
+    /* ---------- Particle background (fallback, shown until/unless a video loads) ---------- */
+    const canvas = bgCanvas;
+    const ctx = canvas.getContext('2d');
+    let w, h, particles = [];
+    let intense = true;
+    const COLORS = ['139,92,246', '56,189,248', '236,72,153'];
+
+    function resize(){
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function makeParticles(){
+      const count = intense ? 90 : 46;
+      particles = Array.from({length: count}, () => ({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        vx: (Math.random()-0.5) * (intense ? 0.6 : 0.25),
+        vy: (Math.random()-0.5) * (intense ? 0.6 : 0.25),
+        r: Math.random()*1.6 + 0.6,
+        c: COLORS[Math.floor(Math.random()*COLORS.length)]
+      }));
+    }
+    makeParticles();
+
+    function step(){
+      ctx.clearRect(0,0,w,h);
+      const linkDist = intense ? 150 : 120;
+      for(let i=0;i<particles.length;i++){
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if(p.x<0||p.x>w) p.vx*=-1;
+        if(p.y<0||p.y>h) p.vy*=-1;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle = `rgba(${p.c},0.75)`;
+        ctx.fill();
+        for(let j=i+1;j<particles.length;j++){
+          const q = particles[j];
+          const dx=p.x-q.x, dy=p.y-q.y;
+          const dist = Math.sqrt(dx*dx+dy*dy);
+          if(dist < linkDist){
+            ctx.beginPath();
+            ctx.moveTo(p.x,p.y);
+            ctx.lineTo(q.x,q.y);
+            ctx.strokeStyle = `rgba(${p.c},${(1-dist/linkDist)*0.18})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    document.getElementById('scanSweep').classList.add('active');
+
+    /* ---------- Visitor counter (persistent, shared across visitors) ---------- */
+    (async () => {
+      const el = document.getElementById('visitorCount');
+      try{
+        let count = 1;
+        try{
+          const existing = await window.storage.get('visitor_count', true);
+          count = parseInt(existing.value, 10) + 1;
+        }catch(e){
+          count = 1;
+        }
+        await window.storage.set('visitor_count', String(count), true);
+        el.textContent = count.toLocaleString();
+      }catch(e){
+        el.textContent = '—';
+      }
+    })();
+
+    /* ---------- Discord live member/status widget ---------- */
+    (async () => {
+      const statusEl = document.getElementById('dwStatus');
+      try{
+        const res = await fetch('https://discord.com/api/v10/invites/aJBfZCjAJ?with_counts=true');
+        if(!res.ok) throw new Error('bad response');
+        const data = await res.json();
+        const online = data.approximate_presence_count ?? null;
+        const total = data.approximate_member_count ?? null;
+        if(online !== null && total !== null){
+          statusEl.innerHTML = `<span class="pip"></span> ${online.toLocaleString()} online • ${total.toLocaleString()} members`;
+        } else {
+          throw new Error('no counts');
+        }
+      }catch(e){
+        statusEl.innerHTML = `<span class="pip"></span> Tap to join & see who's online`;
+      }
+    })();
+  </script>
 </body>
 </html>
